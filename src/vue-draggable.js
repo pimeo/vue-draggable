@@ -1,4 +1,4 @@
-let VueDraggable = {
+var VueDraggable = {
   defaultOptions: {
     dropzoneSelector: 'ul',
     draggableSelector: 'li',
@@ -48,7 +48,7 @@ let VueDraggable = {
     item.setAttribute('aria-grabbed', 'false');
 
     //then find and remove this item from the existing items array
-    for (let i = 0; i < this.selections.items.length; i++) {
+    for (var i = 0; i < this.selections.items.length; i++) {
       if(this.selections.items[i] == item) {
         this.selections.items.splice(i, 1);
         break;
@@ -62,7 +62,7 @@ let VueDraggable = {
       this.selections.owner = null;
 
       //reset the grabbed state on every selected item
-      for (let i = 0; i < this.selections.items.length; i ++) {
+      for (var i = 0; i < this.selections.items.length; i ++) {
         this.selections.items[i].setAttribute('aria-grabbed', 'false');
       }
 
@@ -75,7 +75,7 @@ let VueDraggable = {
   },
   addDropeffects: function () {
     //apply aria-dropeffect and tabindex to all targets apart from the owner
-    for (let len = this.targets.length, i = 0; i < len; i ++) {
+    for (var len = this.targets.length, i = 0; i < len; i ++) {
       if (this.targets[i] != this.selections.owner &&
         this.targets[i].getAttribute('aria-dropeffect') == 'none') {
         this.targets[i].setAttribute('aria-dropeffect', 'move');
@@ -84,7 +84,7 @@ let VueDraggable = {
     }
 
     //remove aria-grabbed and tabindex from all items inside those containers
-    for (let len = this.items.length, i = 0; i < len; i ++) {
+    for (var len = this.items.length, i = 0; i < len; i ++) {
       if (this.items[i].parentNode != this.selections.owner &&
         this.items[i].getAttribute('aria-grabbed')) {
         this.items[i].removeAttribute('aria-grabbed');
@@ -96,7 +96,7 @@ let VueDraggable = {
     //if we have any selected items
     if (this.selections.items.length) {
       //reset aria-dropeffect and remove tabindex from all targets
-      for (let i = 0; i < this.targets.length; i ++) {
+      for (var i = 0; i < this.targets.length; i ++) {
         if (this.targets[i].getAttribute('aria-dropeffect') != 'none') {
           this.targets[i].setAttribute('aria-dropeffect', 'none');
           this.targets[i].removeAttribute('tabindex');
@@ -105,7 +105,7 @@ let VueDraggable = {
 
       //restore aria-grabbed and tabindex to all selectable items
       //without changing the grabbed value of any existing selected items
-      for (let i = 0; i < this.items.length; i ++) {
+      for (var i = 0; i < this.items.length; i ++) {
         if (!this.items[i].getAttribute('aria-grabbed')) {
           this.items[i].setAttribute('aria-grabbed', 'false');
           this.items[i].setAttribute('tabindex', '0');
@@ -130,7 +130,7 @@ let VueDraggable = {
     }
 
     el.addEventListener('mousedown', function(e) {
-      let elem = e.target.closest(this.defaultOptions.draggableSelector);
+      var elem = e.target.closest(this.defaultOptions.draggableSelector);
       //if the element is a draggable item
       if (elem && elem.getAttribute('draggable')) {
         //clear dropeffect from the target containers
@@ -167,7 +167,7 @@ let VueDraggable = {
 
     //mouseup event to implement multiple selection
     el.addEventListener('mouseup', function(e) {
-      let elem = e.target.closest(this.defaultOptions.draggableSelector);
+      var elem = e.target.closest(this.defaultOptions.draggableSelector);
       //if the element is a draggable item
       //and the multipler selection modifier is pressed
       if (elem && elem.getAttribute('draggable') && this.hasModifier(e)) {
@@ -194,7 +194,7 @@ let VueDraggable = {
 
     //dragstart event to initiate mouse dragging
     el.addEventListener('dragstart', function(e) {
-      let elem = e.target.closest(this.defaultOptions.draggableSelector);
+      var elem = e.target.closest(this.defaultOptions.draggableSelector);
       //if the element's parent is not the owner, then block this event
       if (!this.defaultOptions.multipleDropzonesItemsDraggingEnabled &&
         elem && selections.owner != elem.parentNode) {
@@ -312,7 +312,7 @@ let VueDraggable = {
 
             //else [if it's not the last one], find and focus the next one
             else {
-              for (let i = 0; i < this.targets.length; i ++) {
+              for (var i = 0; i < this.targets.length; i ++) {
                 if (this.selections.owner == this.targets[i]) {
                   this.targets[i + 1].focus();
                   break;
@@ -354,7 +354,7 @@ let VueDraggable = {
     //dragleave event to maintain target highlighting using that variable
     el.addEventListener('dragleave', function(e) {
       //get a drop target reference from the relatedTarget
-      let droptarget = this.getContainer(this.related);
+      var droptarget = this.getContainer(this.related);
 
       //if the target is the owner then it's not a valid drop target
       if (droptarget == this.selections.owner) {
@@ -402,7 +402,7 @@ let VueDraggable = {
       //(which implies that we have some selected items)
       if (this.selections.droptarget) {
         //append the selected items to the end of the target container
-        for (let i = 0; i < this.selections.items.length; i ++) {
+        for (var i = 0; i < this.selections.items.length; i ++) {
           this.selections.droptarget.appendChild(this.selections.items[i]);
         }
 
@@ -444,7 +444,7 @@ let VueDraggable = {
         //Enter or Modifier + M is the drop keystroke
         if (e.keyCode == 13 || (e.keyCode == 77 && this.hasModifier(e))) {
           //append the selected items to the end of the target container
-          for (let i = 0; i < this.selections.items.length; i ++) {
+          for (var i = 0; i < this.selections.items.length; i ++) {
             e.target.appendChild(this.selections.items[i]);
           }
 
@@ -473,11 +473,11 @@ let VueDraggable = {
     this.targets = el.querySelectorAll(this.defaultOptions.dropzoneSelector);
     this.items = el.querySelectorAll(this.defaultOptions.draggableSelector);
 
-    for (let i = 0; i < this.targets.length; i++) {
+    for (var i = 0; i < this.targets.length; i++) {
       this.targets[i].setAttribute('aria-dropeffect', 'none');
     }
 
-    for (let i = 0; i < this.items.length; i++) {
+    for (var i = 0; i < this.items.length; i++) {
       this.items[i].setAttribute('draggable', 'true');
       this.items[i].setAttribute('aria-grabbed', 'false');
       this.items[i].setAttribute('tabindex', '0');
