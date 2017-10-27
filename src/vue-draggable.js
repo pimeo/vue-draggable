@@ -4,9 +4,9 @@ let VueDraggable = {
     draggableSelector: 'li',
     excludeOlderBrowsers: true,
     multipleDropzonesItemsDraggingEnabled: true,
-    onDrop: () => {},
-    onDragstart: () => {},
-    onDragend: () => {}
+    onDrop: function() {},
+    onDragstart: function() {},
+    onDragend: function() {}
   },
   targets: null,
   items: null,
@@ -129,7 +129,7 @@ let VueDraggable = {
       return;
     }
 
-    el.addEventListener('mousedown', (e) => {
+    el.addEventListener('mousedown', function(e) {
       let elem = e.target.closest(this.defaultOptions.draggableSelector);
       //if the element is a draggable item
       if (elem && elem.getAttribute('draggable')) {
@@ -163,10 +163,10 @@ let VueDraggable = {
         this.clearDropeffects();
       }
 
-    }, false);
+    }.bind(this), false);
 
     //mouseup event to implement multiple selection
-    el.addEventListener('mouseup', (e) => {
+    el.addEventListener('mouseup', function(e) {
       let elem = e.target.closest(this.defaultOptions.draggableSelector);
       //if the element is a draggable item
       //and the multipler selection modifier is pressed
@@ -190,10 +190,10 @@ let VueDraggable = {
         }
       }
 
-    }, false);
+    }.bind(this), false);
 
     //dragstart event to initiate mouse dragging
-    el.addEventListener('dragstart', (e) => {
+    el.addEventListener('dragstart', function(e) {
       let elem = e.target.closest(this.defaultOptions.draggableSelector);
       //if the element's parent is not the owner, then block this event
       if (!this.defaultOptions.multipleDropzonesItemsDraggingEnabled &&
@@ -225,10 +225,10 @@ let VueDraggable = {
       //apply dropeffect to the target containers
       this.addDropeffects();
 
-    }, false);
+    }.bind(this), false);
 
     //keydown event to implement selection and abort
-    el.addEventListener('keydown', (e) => {
+    el.addEventListener('keydown', function(e) {
       //if the element is a grabbable item
       if (e.target.getAttribute('aria-grabbed')) {
         //Space is the selection or unselection keystroke
@@ -344,15 +344,15 @@ let VueDraggable = {
         }
       }
 
-    }, false);
+    }.bind(this), false);
 
     //dragenter event to set that variable
-    el.addEventListener('dragenter', (e) => {
+    el.addEventListener('dragenter', function(e) {
       this.related = e.target;
-    }, false);
+    }.bind(this), false);
 
     //dragleave event to maintain target highlighting using that variable
-    el.addEventListener('dragleave', (e) => {
+    el.addEventListener('dragleave', function(e) {
       //get a drop target reference from the relatedTarget
       let droptarget = this.getContainer(this.related);
 
@@ -378,19 +378,19 @@ let VueDraggable = {
         //then save that reference for next time
         this.selections.droptarget = droptarget;
       }
-    }, false);
+    }.bind(this), false);
 
     //dragover event to allow the drag by preventing its default
-    el.addEventListener('dragover', (e) => {
+    el.addEventListener('dragover', function(e) {
       //if we have any selected items, allow them to be dragged
       if (this.selections.items.length) {
         e.preventDefault();
       }
-    }, false);
+    }.bind(this), false);
 
     //dragend event to implement items being validly dropped into targets,
     //or invalidly dropped elsewhere, and to clean-up the interface either way
-    el.addEventListener('dragend', (e) => {
+    el.addEventListener('dragend', function(e) {
       if (typeof this.defaultOptions.onDragend === 'function') {
         this.defaultOptions.onDragend(
           Object.assign({
@@ -435,10 +435,10 @@ let VueDraggable = {
         }
       }
 
-    }, false);
+    }.bind(this), false);
 
     //keydown event to implement items being dropped into targets
-    el.addEventListener('keydown', (e) => {
+    el.addEventListener('keydown', function(e) {
       //if the element is a drop target container
       if (e.target.getAttribute('aria-dropeffect')) {
         //Enter or Modifier + M is the drop keystroke
@@ -463,7 +463,7 @@ let VueDraggable = {
         }
       }
 
-    }, false);
+    }.bind(this), false);
   },
   initiate: function (el) {
     if (this.defaultOptions.excludeOlderBrowsers && this.isOldBrowser()) {

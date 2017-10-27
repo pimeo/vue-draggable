@@ -4,9 +4,9 @@ let VueDraggable = {
     draggableSelector: 'li',
     excludeOlderBrowsers: true,
     multipleDropzonesItemsDraggingEnabled: true,
-    onDrop: null,
-    onDragstart: null,
-    onDragend: null
+    onDrop: function() {},
+    onDragstart: function() {},
+    onDragend: function() {}
   },
   targets: null,
   items: null,
@@ -19,7 +19,9 @@ let VueDraggable = {
     droptarget: null
   },
   isOldBrowser: function () {
-    return !document.querySelectorAll || !('draggable' in document.createElement('span')) || window.opera;
+    return !document.querySelectorAll ||
+      !('draggable' in document.createElement('span')) ||
+      window.opera;
   },
   addSelection: function (item) {
     //if the owner reference is still null, set it to this item's parent
@@ -30,7 +32,8 @@ let VueDraggable = {
 
     //or if that's already happened then compare it with this item's parent
     //and if they're not the same container, return to prevent selection
-    if (!this.defaultOptions.multipleDropzonesItemsDraggingEnabled && this.selections.owner != item.parentNode) {
+    if (!this.defaultOptions.multipleDropzonesItemsDraggingEnabled &&
+      this.selections.owner != item.parentNode) {
       return;
     }
 
@@ -46,7 +49,7 @@ let VueDraggable = {
 
     //then find and remove this item from the existing items array
     for (let i = 0; i < this.selections.items.length; i++) {
-      if (this.selections.items[i] == item) {
+      if(this.selections.items[i] == item) {
         this.selections.items.splice(i, 1);
         break;
       }
@@ -59,7 +62,7 @@ let VueDraggable = {
       this.selections.owner = null;
 
       //reset the grabbed state on every selected item
-      for (let i = 0; i < this.selections.items.length; i++) {
+      for (let i = 0; i < this.selections.items.length; i ++) {
         this.selections.items[i].setAttribute('aria-grabbed', 'false');
       }
 
@@ -68,20 +71,22 @@ let VueDraggable = {
     }
   },
   hasModifier: function (e) {
-    return e.ctrlKey || e.metaKey || e.shiftKey;
+    return (e.ctrlKey || e.metaKey || e.shiftKey);
   },
   addDropeffects: function () {
     //apply aria-dropeffect and tabindex to all targets apart from the owner
-    for (let len = this.targets.length, i = 0; i < len; i++) {
-      if (this.targets[i] != this.selections.owner && this.targets[i].getAttribute('aria-dropeffect') == 'none') {
+    for (let len = this.targets.length, i = 0; i < len; i ++) {
+      if (this.targets[i] != this.selections.owner &&
+        this.targets[i].getAttribute('aria-dropeffect') == 'none') {
         this.targets[i].setAttribute('aria-dropeffect', 'move');
         this.targets[i].setAttribute('tabindex', '0');
       }
     }
 
     //remove aria-grabbed and tabindex from all items inside those containers
-    for (let len = this.items.length, i = 0; i < len; i++) {
-      if (this.items[i].parentNode != this.selections.owner && this.items[i].getAttribute('aria-grabbed')) {
+    for (let len = this.items.length, i = 0; i < len; i ++) {
+      if (this.items[i].parentNode != this.selections.owner &&
+        this.items[i].getAttribute('aria-grabbed')) {
         this.items[i].removeAttribute('aria-grabbed');
         this.items[i].removeAttribute('tabindex');
       }
@@ -91,7 +96,7 @@ let VueDraggable = {
     //if we have any selected items
     if (this.selections.items.length) {
       //reset aria-dropeffect and remove tabindex from all targets
-      for (let i = 0; i < this.targets.length; i++) {
+      for (let i = 0; i < this.targets.length; i ++) {
         if (this.targets[i].getAttribute('aria-dropeffect') != 'none') {
           this.targets[i].setAttribute('aria-dropeffect', 'none');
           this.targets[i].removeAttribute('tabindex');
@@ -100,7 +105,7 @@ let VueDraggable = {
 
       //restore aria-grabbed and tabindex to all selectable items
       //without changing the grabbed value of any existing selected items
-      for (let i = 0; i < this.items.length; i++) {
+      for (let i = 0; i < this.items.length; i ++) {
         if (!this.items[i].getAttribute('aria-grabbed')) {
           this.items[i].setAttribute('aria-grabbed', 'false');
           this.items[i].setAttribute('tabindex', '0');
@@ -115,16 +120,16 @@ let VueDraggable = {
       if (element && element.nodeType == 1 && element.getAttribute('aria-dropeffect')) {
         return element;
       }
-    } while (element = element ? element.parentNode : null);
+    } while ((element = element ? element.parentNode : null));
 
     return null;
   },
-  registerListeners: function (el) {
+  registerListeners: function(el) {
     if (this.defaultOptions.excludeOlderBrowsers && this.isOldBrowser()) {
       return;
     }
 
-    el.addEventListener('mousedown', e => {
+    el.addEventListener('mousedown', function(e) {
       let elem = e.target.closest(this.defaultOptions.draggableSelector);
       //if the element is a draggable item
       if (elem && elem.getAttribute('draggable')) {
@@ -132,7 +137,8 @@ let VueDraggable = {
         this.clearDropeffects();
         //if the multiple selection modifier is not pressed
         //and the item's grabbed state is currently false
-        if (!this.hasModifier(e) && elem.getAttribute('aria-grabbed') == 'false') {
+        if (!this.hasModifier(e) &&
+          elem.getAttribute('aria-grabbed') == 'false') {
           //clear all existing selections
           this.clearSelections();
 
@@ -144,22 +150,23 @@ let VueDraggable = {
       //else [if the element is anything else]
       //and the selection modifier is not pressed
       else if (!this.hasModifier(e)) {
-          //clear dropeffect from the target containers
-          this.clearDropeffects();
+        //clear dropeffect from the target containers
+        this.clearDropeffects();
 
-          //clear all existing selections
-          this.clearSelections();
-        }
+        //clear all existing selections
+        this.clearSelections();
+      }
 
-        //else [if the element is anything else and the modifier is pressed]
-        else {
-            //clear dropeffect from the target containers
-            this.clearDropeffects();
-          }
-    }, false);
+      //else [if the element is anything else and the modifier is pressed]
+      else {
+        //clear dropeffect from the target containers
+        this.clearDropeffects();
+      }
+
+    }.bind(this), false);
 
     //mouseup event to implement multiple selection
-    el.addEventListener('mouseup', e => {
+    el.addEventListener('mouseup', function(e) {
       let elem = e.target.closest(this.defaultOptions.draggableSelector);
       //if the element is a draggable item
       //and the multipler selection modifier is pressed
@@ -178,28 +185,33 @@ let VueDraggable = {
 
         //else [if the item's grabbed state is false]
         else {
-            //add this additional selection
-            this.addSelection(elem);
-          }
+          //add this additional selection
+          this.addSelection(elem);
+        }
       }
-    }, false);
+
+    }.bind(this), false);
 
     //dragstart event to initiate mouse dragging
-    el.addEventListener('dragstart', e => {
+    el.addEventListener('dragstart', function(e) {
       let elem = e.target.closest(this.defaultOptions.draggableSelector);
       //if the element's parent is not the owner, then block this event
-      if (!this.defaultOptions.multipleDropzonesItemsDraggingEnabled && elem && selections.owner != elem.parentNode) {
+      if (!this.defaultOptions.multipleDropzonesItemsDraggingEnabled &&
+        elem && selections.owner != elem.parentNode) {
         e.preventDefault();
         return;
       }
 
       if (typeof this.defaultOptions.onDragstart === 'function') {
-        this.defaultOptions.onDragstart(Object.assign({ nativeEvent: e }, this.selections));
+        this.defaultOptions.onDragstart(Object.assign({
+          nativeEvent: e
+        }, this.selections));
       }
 
       //[else] if the multiple selection modifier is pressed
       //and the item's grabbed state is currently false
-      if (this.hasModifier(e) && elem.getAttribute('aria-grabbed') == 'false') {
+      if (this.hasModifier(e) &&
+        elem.getAttribute('aria-grabbed') == 'false') {
         //add this additional selection
         this.addSelection(elem);
       }
@@ -212,10 +224,11 @@ let VueDraggable = {
 
       //apply dropeffect to the target containers
       this.addDropeffects();
-    }, false);
+
+    }.bind(this), false);
 
     //keydown event to implement selection and abort
-    el.addEventListener('keydown', e => {
+    el.addEventListener('keydown', function(e) {
       //if the element is a grabbable item
       if (e.target.getAttribute('aria-grabbed')) {
         //Space is the selection or unselection keystroke
@@ -250,35 +263,35 @@ let VueDraggable = {
 
             //else [if its grabbed state is currently false]
             else {
-                //add this additional selection
-                this.addSelection(e.target);
-
-                //apply dropeffect to the target containers
-                this.addDropeffects();
-              }
-          }
-
-          //else [if the multiple selection modifier is not pressed]
-          //and the item's grabbed state is currently false
-          else if (e.target.getAttribute('aria-grabbed') == 'false') {
-              //clear dropeffect from the target containers
-              this.clearDropeffects();
-
-              //clear all existing selections
-              this.clearSelections();
-
-              //add this new selection
+              //add this additional selection
               this.addSelection(e.target);
 
               //apply dropeffect to the target containers
               this.addDropeffects();
             }
+          }
 
-            //else [if modifier is not pressed and grabbed is already true]
-            else {
-                //apply dropeffect to the target containers
-                this.addDropeffects();
-              }
+          //else [if the multiple selection modifier is not pressed]
+          //and the item's grabbed state is currently false
+          else if (e.target.getAttribute('aria-grabbed') == 'false') {
+            //clear dropeffect from the target containers
+            this.clearDropeffects();
+
+            //clear all existing selections
+            this.clearSelections();
+
+            //add this new selection
+            this.addSelection(e.target);
+
+            //apply dropeffect to the target containers
+            this.addDropeffects();
+          }
+
+          //else [if modifier is not pressed and grabbed is already true]
+          else {
+            //apply dropeffect to the target containers
+            this.addDropeffects();
+          }
 
           //then prevent default to avoid any conflict with native actions
           e.preventDefault();
@@ -299,13 +312,13 @@ let VueDraggable = {
 
             //else [if it's not the last one], find and focus the next one
             else {
-                for (let i = 0; i < this.targets.length; i++) {
-                  if (this.selections.owner == this.targets[i]) {
-                    this.targets[i + 1].focus();
-                    break;
-                  }
+              for (let i = 0; i < this.targets.length; i ++) {
+                if (this.selections.owner == this.targets[i]) {
+                  this.targets[i + 1].focus();
+                  break;
                 }
               }
+            }
           }
 
           //then prevent default to avoid any conflict with native actions
@@ -330,15 +343,16 @@ let VueDraggable = {
           //but don't prevent default so that native actions can still occur
         }
       }
-    }, false);
+
+    }.bind(this), false);
 
     //dragenter event to set that variable
-    el.addEventListener('dragenter', e => {
+    el.addEventListener('dragenter', function(e) {
       this.related = e.target;
-    }, false);
+    }.bind(this), false);
 
     //dragleave event to maintain target highlighting using that variable
-    el.addEventListener('dragleave', e => {
+    el.addEventListener('dragleave', function(e) {
       //get a drop target reference from the relatedTarget
       let droptarget = this.getContainer(this.related);
 
@@ -352,7 +366,8 @@ let VueDraggable = {
       if (droptarget != this.selections.droptarget) {
         //if we have a saved reference, clear its existing dragover class
         if (this.selections.droptarget) {
-          this.selections.droptarget.className = this.selections.droptarget.className.replace(/ dragover/g, '');
+          this.selections.droptarget.className =
+            this.selections.droptarget.className.replace(/ dragover/g, '');
         }
 
         //apply the dragover class to the new drop target reference
@@ -363,32 +378,38 @@ let VueDraggable = {
         //then save that reference for next time
         this.selections.droptarget = droptarget;
       }
-    }, false);
+    }.bind(this), false);
 
     //dragover event to allow the drag by preventing its default
-    el.addEventListener('dragover', e => {
+    el.addEventListener('dragover', function(e) {
       //if we have any selected items, allow them to be dragged
       if (this.selections.items.length) {
         e.preventDefault();
       }
-    }, false);
+    }.bind(this), false);
 
     //dragend event to implement items being validly dropped into targets,
     //or invalidly dropped elsewhere, and to clean-up the interface either way
-    el.addEventListener('dragend', e => {
+    el.addEventListener('dragend', function(e) {
       if (typeof this.defaultOptions.onDragend === 'function') {
-        this.defaultOptions.onDragend(Object.assign({ nativeEvent: e }, this.selections));
+        this.defaultOptions.onDragend(
+          Object.assign({
+            nativeEvent: e
+          }, this.selections));
       }
+
       //if we have a valid drop target reference
       //(which implies that we have some selected items)
       if (this.selections.droptarget) {
         //append the selected items to the end of the target container
-        for (let i = 0; i < this.selections.items.length; i++) {
+        for (let i = 0; i < this.selections.items.length; i ++) {
           this.selections.droptarget.appendChild(this.selections.items[i]);
         }
 
         if (typeof this.defaultOptions.onDrop === 'function') {
-          this.defaultOptions.onDrop(Object.assign({ nativeEvent: e }, this.selections));
+          this.defaultOptions.onDrop(Object.assign({
+            nativeEvent: e
+          }, this.selections));
         }
 
         //prevent default to allow the action
@@ -406,22 +427,24 @@ let VueDraggable = {
           this.clearSelections();
 
           //reset the target's dragover class
-          this.selections.droptarget.className = this.selections.droptarget.className.replace(/ dragover/g, '');
+          this.selections.droptarget.className =
+            this.selections.droptarget.className.replace(/ dragover/g, '');
 
           //reset the target reference
           this.selections.droptarget = null;
         }
       }
-    }, false);
+
+    }.bind(this), false);
 
     //keydown event to implement items being dropped into targets
-    el.addEventListener('keydown', e => {
+    el.addEventListener('keydown', function(e) {
       //if the element is a drop target container
       if (e.target.getAttribute('aria-dropeffect')) {
         //Enter or Modifier + M is the drop keystroke
-        if (e.keyCode == 13 || e.keyCode == 77 && this.hasModifier(e)) {
+        if (e.keyCode == 13 || (e.keyCode == 77 && this.hasModifier(e))) {
           //append the selected items to the end of the target container
-          for (let i = 0; i < this.selections.items.length; i++) {
+          for (let i = 0; i < this.selections.items.length; i ++) {
             e.target.appendChild(this.selections.items[i]);
           }
 
@@ -439,7 +462,8 @@ let VueDraggable = {
           e.preventDefault();
         }
       }
-    }, false);
+
+    }.bind(this), false);
   },
   initiate: function (el) {
     if (this.defaultOptions.excludeOlderBrowsers && this.isOldBrowser()) {

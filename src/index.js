@@ -8,9 +8,9 @@ VueDraggable.install = function (Vue) {
       VueDraggable.registerListeners(el);
     },
     componentUpdated: function (el, options) {
-      setTimeout(() => {
+      setTimeout( function() {
         VueDraggable.initiate(el);
-      });
+      }.bind(this));
     }
   });
 };
